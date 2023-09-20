@@ -8,12 +8,12 @@ async function extractJiraKeysFromCommit() {
     try {
         const regex = /((([A-Z]+)|([0-9]+))+-\d+)/g;
         const isPullRequest = core.getInput('is-pull-request') == 'true';
-        // console.log("isPullRequest: " + isPullRequest);
+        console.log("isPullRequest: " + isPullRequest);
         const commitMessage = core.getInput('commit-message');
-        // console.log("commitMessage: " + commitMessage);
-        // console.log("core.getInput('parse-all-commits'): " + core.getInput('parse-all-commits'));
+        console.log("commitMessage: " + commitMessage);
+        console.log("core.getInput('parse-all-commits'): " + core.getInput('parse-all-commits'));
         const parseAllCommits = core.getInput('parse-all-commits') == 'true';
-        // console.log("parseAllCommits: " + parseAllCommits);
+        console.log("parseAllCommits: " + parseAllCommits);
         const payload = github.context.payload;
         const token = process.env['GITHUB_TOKEN'];
         const octokit = new Octokit({
@@ -21,7 +21,7 @@ async function extractJiraKeysFromCommit() {
         });
         if (isPullRequest) {
             let resultArr = [];
-            // console.log("is pull request...");
+            console.log("is pull request...");
             const owner = payload.repository.owner.login;
             const repo = payload.repository.name;
             const prNum = payload.number;
@@ -35,52 +35,52 @@ async function extractJiraKeysFromCommit() {
                 const matches = matchAll(commit.message, regex).toArray();
                 matches.forEach((match) => {
                     if (resultArr.find((element) => element == match)) {
-                        // console.log(match + " is already included in result array");
+                        console.log(match + " is already included in result array");
                     }
                     else {
-                        // console.log(" adding " + match + " to result array");
+                        console.log(" adding " + match + " to result array");
                         resultArr.push(match);
                     }
                 });
             });
             const result = resultArr.join(',');
-            core.setOutput("jira-keys", result);
+            output("jira-keys", result);
         }
         else {
-            // console.log("not a pull request");
+            console.log("not a pull request");
             if (commitMessage) {
-                // console.log("commit-message input val provided...");
+                console.log("commit-message input val provided...");
                 const matches = matchAll(commitMessage, regex).toArray();
                 const result = matches.join(',');
-                core.setOutput("jira-keys", result);
+                output("jira-keys", result);
             }
             else {
-                // console.log("no commit-message input val provided...");
+                console.log("no commit-message input val provided...");
                 const payload = github.context.payload;
                 if (parseAllCommits) {
-                    // console.log("parse-all-commits input val is true");
+                    console.log("parse-all-commits input val is true");
                     let resultArr = [];
                     payload.commits.forEach((commit) => {
                         const matches = matchAll(commit.message, regex).toArray();
                         matches.forEach((match) => {
                             if (resultArr.find((element) => element == match)) {
-                                // console.log(match + " is already included in result array");
+                                console.log(match + " is already included in result array");
                             }
                             else {
-                                // console.log(" adding " + match + " to result array");
+                                console.log(" adding " + match + " to result array");
                                 resultArr.push(match);
                             }
                         });
                     });
                     const result = resultArr.join(',');
-                    core.setOutput("jira-keys", result);
+                    output("jira-keys", result);
                 }
                 else {
-                    // console.log("parse-all-commits input val is false");
-                    // console.log("head_commit: ", payload.head_commit);
+                    console.log("parse-all-commits input val is false");
+                    console.log("head_commit: ", payload.head_commit);
                     const matches = matchAll(payload.head_commit.message, regex).toArray();
                     const result = matches.join(',');
-                    core.setOutput("jira-keys", result);
+                    output("jira-keys", result);
                 }
             }
         }
@@ -91,6 +91,10 @@ async function extractJiraKeysFromCommit() {
 }
 (async function () {
     await extractJiraKeysFromCommit();
-    // console.log("finished extracting jira keys from commit message");
+    console.log("finished extracting jira keys from commit message");
 })();
+const output = (key, val) => {
+    console.log(`Setting output: ${key}: ${val}`);
+    core.setOutput(key, val);
+};
 exports.default = extractJiraKeysFromCommit;
