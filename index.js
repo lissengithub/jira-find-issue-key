@@ -7,7 +7,7 @@ const Octokit = require("@octokit/rest");
 // todo: any type has to be added to prevent compilation error, despite libs being correctly typed
 async function extractJiraKeysFromCommit() {
     // temporary use this method instead of debugging the old one
-    const prefix = core.getInput("prefix") ?? "LSN"; // TODO remove this default value
+    const prefix = "LSN"; // TODO remove this default value
     const result = allMatches(prefix, await findStrings());
     const resultStr = Array.from(result).join(",");
     core.setOutput("jira-keys", resultStr);
