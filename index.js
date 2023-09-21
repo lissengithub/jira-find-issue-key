@@ -10,6 +10,7 @@ async function extractJiraKeysFromCommit() {
     const prefix = "LSN"; // TODO remove this default value
     const result = allMatches(prefix, await findStrings());
     const resultStr = Array.from(result).join(",");
+    console.log('Result:',resultStr);
     core.setOutput("jira-keys", resultStr);
     // try {
     //   const regex = /((([A-Z]+)|([0-9]+))+-\d+)/g;
