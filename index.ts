@@ -7,7 +7,7 @@ async function extractJiraKeysFromCommit() {
   // temporary use this method instead of debugging the old one
   const prefix = core.getInput("prefix") ?? "LSN"; // TODO remove this default value
   const result = allMatches(prefix, await findStrings());
-  const resultStr = Array.from(result).join(",");
+  const resultStr = Array.from(result)?.[0]
   core.setOutput("jira-keys", resultStr);
 
   // try {
